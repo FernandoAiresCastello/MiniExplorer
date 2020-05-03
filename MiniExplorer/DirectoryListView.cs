@@ -10,34 +10,74 @@ using System.Windows.Forms;
 using System.IO;
 using System.Collections;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace MiniExplorer
 {
     public partial class DirectoryListView : ListView
     {
+        public enum DetailColumn
+        {
+            Filename, Size, Type
+        }
+
+        public enum SortDirection
+        {
+            Ascending, Descending
+        }
+
         public string RootPath { get; private set; }
         public DirectoryInfo DirectoryInfo { get; private set; }
         public List<DirectoryItem> DirectoryItems { get; private set; }
+        public DetailColumn SortBy { set; get; }
         public long FileCount => CountFiles();
         public long FolderCount => CountFolders();
+
+        private readonly ImageList Icons = new ImageList();
 
         public DirectoryListView()
         {
             View = View.Details;
             DirectoryItems = new List<DirectoryItem>();
             MultiSelect = true;
-            Columns.Add("Filename", 200, HorizontalAlignment.Left);
-            Columns.Add("Size", 100, HorizontalAlignment.Left);
+
             MouseDoubleClick += DirectoryListView_MouseDoubleClick;
+            ColumnClick += DirectoryListView_ColumnClick;
+
+            SortBy = DetailColumn.Filename;
+            AddColumn(DetailColumn.Filename, 200);
+            AddColumn(DetailColumn.Size, 100);
+            AddColumn(DetailColumn.Type, 50);
+        }
+
+        private void AddColumn(DetailColumn detailColumn, int width)
+        {
+            ColumnHeader column = Columns.Add(detailColumn.ToString(), width, HorizontalAlignment.Left);
+            column.Tag = detailColumn;
+            //todo
+        }
+
+        private void DirectoryListView_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            SortBy = (DetailColumn)Columns[e.Column].Tag;
+            Sorting = SortOrder.Ascending;
         }
 
         private void DirectoryListView_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (SelectedIndices.Count == 0)
-                return;
+            try
+            {
+                if (SelectedIndices.Count == 0)
+                    return;
 
-            int index = SelectedIndices[0];
-            DirectoryItem item = DirectoryItems[index];
+                int index = SelectedIndices[0];
+                DirectoryItem item = DirectoryItems[index];
+                Process.Start(item.Path);
+            }
+            catch (Exception ex)
+            {
+                Util.Error(ex.Message);
+            }
         }
 
         public void Load(string rootPath)
@@ -51,10 +91,16 @@ namespace MiniExplorer
                 throw new DirectoryNotFoundException();
             
             DirectoryInfo = new DirectoryInfo(rootPath);
+            Icons.Images.Clear();
             DirectoryItems.Clear();
             DirectoryItems.AddRange(LoadFiles());
             DirectoryItems.AddRange(LoadFolders());
             UpdateView();
+        }
+
+        public void Reload()
+        {
+            Load(RootPath);
         }
 
         private void UpdateView()
@@ -66,7 +112,8 @@ namespace MiniExplorer
                 ListViewItem listItem = Items.Add(item.Name);
                 listItem.Tag = item;
                 listItem.SubItems.Add(item.SizeAsString);
-           }
+                listItem.SubItems.Add(item.FileExtension);
+            }
 
             Refresh();
         }
@@ -74,11 +121,36 @@ namespace MiniExplorer
         private List<DirectoryItem> LoadFiles()
         {
             List<DirectoryItem> files = new List<DirectoryItem>();
+            int iconIndex = 0;
 
             foreach (FileInfo fileInfo in DirectoryInfo.EnumerateFiles())
-                files.Add(new DirectoryItem(fileInfo));
+            {
+                /*Icon icon = GetAssociatedIcon(fileInfo.FullName);
+                if (icon != null)
+                    Icons.Images.Add(icon);*/
+
+                DirectoryItem item = new DirectoryItem(fileInfo);
+                item.IconIndex = iconIndex++;
+                files.Add(item);
+            }
 
             return files;
+        }
+
+        private Icon GetAssociatedIcon(string path)
+        {
+            Icon icon;
+
+            try
+            {
+                icon = Icon.ExtractAssociatedIcon(path);
+            }
+            catch
+            {
+                icon = null;
+            }
+
+            return icon;
         }
 
         private List<DirectoryItem> LoadFolders()

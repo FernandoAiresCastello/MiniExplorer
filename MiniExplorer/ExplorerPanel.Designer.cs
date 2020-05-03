@@ -29,12 +29,13 @@
         private void InitializeComponent()
         {
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.DirectoryListView = new MiniExplorer.DirectoryListView();
             this.TxtRootPath = new System.Windows.Forms.TextBox();
             this.ToolBar = new System.Windows.Forms.ToolStrip();
             this.StatusBar = new System.Windows.Forms.StatusStrip();
             this.LbFileCount = new System.Windows.Forms.ToolStripStatusLabel();
             this.LbFolderCount = new System.Windows.Forms.ToolStripStatusLabel();
+            this.DirectoryListView = new MiniExplorer.DirectoryListView();
+            this.LbSort = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanel1.SuspendLayout();
             this.StatusBar.SuspendLayout();
             this.SuspendLayout();
@@ -58,18 +59,6 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(336, 402);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
-            // DirectoryListView
-            // 
-            this.DirectoryListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.DirectoryListView.FullRowSelect = true;
-            this.DirectoryListView.HideSelection = false;
-            this.DirectoryListView.Location = new System.Drawing.Point(3, 54);
-            this.DirectoryListView.Name = "DirectoryListView";
-            this.DirectoryListView.Size = new System.Drawing.Size(330, 323);
-            this.DirectoryListView.TabIndex = 1;
-            this.DirectoryListView.UseCompatibleStateImageBehavior = false;
-            this.DirectoryListView.View = System.Windows.Forms.View.Details;
-            // 
             // TxtRootPath
             // 
             this.TxtRootPath.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -91,7 +80,8 @@
             // 
             this.StatusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.LbFileCount,
-            this.LbFolderCount});
+            this.LbFolderCount,
+            this.LbSort});
             this.StatusBar.Location = new System.Drawing.Point(0, 380);
             this.StatusBar.Name = "StatusBar";
             this.StatusBar.Size = new System.Drawing.Size(336, 22);
@@ -109,6 +99,26 @@
             this.LbFolderCount.Name = "LbFolderCount";
             this.LbFolderCount.Size = new System.Drawing.Size(54, 17);
             this.LbFolderCount.Text = "0 Folders";
+            // 
+            // DirectoryListView
+            // 
+            this.DirectoryListView.AllowColumnReorder = true;
+            this.DirectoryListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.DirectoryListView.FullRowSelect = true;
+            this.DirectoryListView.GridLines = true;
+            this.DirectoryListView.HideSelection = false;
+            this.DirectoryListView.Location = new System.Drawing.Point(3, 54);
+            this.DirectoryListView.Name = "DirectoryListView";
+            this.DirectoryListView.Size = new System.Drawing.Size(330, 323);
+            this.DirectoryListView.TabIndex = 1;
+            this.DirectoryListView.UseCompatibleStateImageBehavior = false;
+            this.DirectoryListView.View = System.Windows.Forms.View.Details;
+            // 
+            // LbSort
+            // 
+            this.LbSort.Name = "LbSort";
+            this.LbSort.Size = new System.Drawing.Size(107, 17);
+            this.LbSort.Text = "Sort: Filename ASC";
             // 
             // ExplorerPanel
             // 
@@ -134,5 +144,6 @@
         private System.Windows.Forms.StatusStrip StatusBar;
         private System.Windows.Forms.ToolStripStatusLabel LbFileCount;
         private System.Windows.Forms.ToolStripStatusLabel LbFolderCount;
+        private System.Windows.Forms.ToolStripStatusLabel LbSort;
     }
 }

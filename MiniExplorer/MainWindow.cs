@@ -21,10 +21,17 @@ namespace MiniExplorer
         public MainWindow()
         {
             InitializeComponent();
-            Font = EmbeddedFontLoader.Load(Properties.Resources.font_roboto_regular, 12);
+            Size = new Size(500, 400);
+            SetDefaultFont();
             DefaultRootPath = SystemRootPath;
             LeftPanel.RootPath = TestPath1;
             RightPanel.RootPath = TestPath2;
+            SplitContainer.Panel2Collapsed = true;
+        }
+
+        private void SetDefaultFont()
+        {
+            Font = EmbeddedFontLoader.Load(Properties.Resources.font_roboto_regular, 12);
         }
 
         private void BtnExit_Click(object sender, EventArgs e)
@@ -41,6 +48,29 @@ namespace MiniExplorer
                 Font = dialog.Font;
                 Refresh();
             }
+        }
+
+        private void BtnToggleDualPanel_Click(object sender, EventArgs e)
+        {
+            SplitContainer.Panel2Collapsed = !SplitContainer.Panel2Collapsed;
+        }
+
+        private void BtnToggleGrid_Click(object sender, EventArgs e)
+        {
+            LeftPanel.View.GridLines = !LeftPanel.View.GridLines;
+            RightPanel.View.GridLines = !RightPanel.View.GridLines;
+        }
+
+        private void BtnRefresh_Click(object sender, EventArgs e)
+        {
+            LeftPanel.View.Reload();
+            RightPanel.View.Reload();
+        }
+
+        private void BtnResetFont_Click(object sender, EventArgs e)
+        {
+            SetDefaultFont();
+            Refresh();
         }
     }
 }

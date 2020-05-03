@@ -14,6 +14,11 @@ namespace MiniExplorer
             MessageBox.Show(text, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
+        public static void Error(string text)
+        {
+            MessageBox.Show(text, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
         public static string BytesToString(long byteCount)
         {
             string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };

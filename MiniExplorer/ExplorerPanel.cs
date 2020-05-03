@@ -13,6 +13,8 @@ namespace MiniExplorer
 {
     public partial class ExplorerPanel : UserControl
     {
+        public DirectoryListView View => DirectoryListView;
+
         public string RootPath
         {
             get => _RootPath;
