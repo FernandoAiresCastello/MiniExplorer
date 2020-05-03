@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{67115861-A38A-4CBD-A9AD-7486A25B990D}</ProjectGuid>
+    <ProjectGuid>{78E730D9-3AF8-4DD2-AD12-0D7496BF4255}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>MiniExplorer</RootNamespace>
     <AssemblyName>MiniExplorer</AssemblyName>
@@ -46,14 +46,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DirectoryItem.cs" />
+    <Compile Include="EmbeddedFontLoader.cs" />
     <Compile Include="ExplorerPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ExplorerPanel.Designer.cs">
       <DependentUpon>ExplorerPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="FilesystemEntry.cs" />
-    <Compile Include="FilesystemEntryType.cs" />
+    <Compile Include="DirectoryListView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DirectoryListView.Designer.cs">
+      <DependentUpon>DirectoryListView.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -62,6 +68,13 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ShellIcon.cs" />
+    <Compile Include="Util.cs" />
     <EmbeddedResource Include="ExplorerPanel.resx">
       <DependentUpon>ExplorerPanel.cs</DependentUpon>
     </EmbeddedResource>
@@ -76,7 +89,12 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -86,9 +104,19 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Resources\Roboto-Regular.ttf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="folder.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cross.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\folder.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

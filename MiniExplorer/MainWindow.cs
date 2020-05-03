@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,31 +13,34 @@ namespace MiniExplorer
 {
     public partial class MainWindow : Form
     {
-        private readonly int MinimumDoubleWidth = 650;
+        public readonly string DefaultRootPath;
+        public readonly string SystemRootPath = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.System));
+        public readonly string TestPath1 = @"C:\Windows";
+        public readonly string TestPath2 = @"C:\Windows\System32";
 
         public MainWindow()
         {
             InitializeComponent();
+            Font = EmbeddedFontLoader.Load(Properties.Resources.font_roboto_regular, 12);
+            DefaultRootPath = SystemRootPath;
+            LeftPanel.RootPath = TestPath1;
+            RightPanel.RootPath = TestPath2;
         }
 
-        private void MiSingleMode_Click(object sender, EventArgs e)
-        {
-            SplitContainer.Panel2Collapsed = true;
-        }
-
-        private void MiDoubleMode_Click(object sender, EventArgs e)
-        {
-            SplitContainer.Panel2Collapsed = false;
-
-            if (Width < MinimumDoubleWidth)
-                Width = MinimumDoubleWidth;
-
-            SplitContainer.SplitterDistance = Width / 2;
-        }
-
-        private void MiExit_Click(object sender, EventArgs e)
+        private void BtnExit_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        private void BtnFont_Click(object sender, EventArgs e)
+        {
+            FontDialog dialog = new FontDialog();
+
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+            {
+                Font = dialog.Font;
+                Refresh();
+            }
         }
     }
 }

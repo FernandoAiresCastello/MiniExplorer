@@ -13,72 +13,58 @@ namespace MiniExplorer
 {
     public partial class ExplorerPanel : UserControl
     {
-        private readonly List<FilesystemEntry> Entries = new List<FilesystemEntry>();
-
-        public string CurrentPath
+        public string RootPath
         {
-            get { return TxtPath.Text.Trim(); }
-            set { SetPath(value); }
+            get => _RootPath;
+
+            set
+            {
+                _RootPath = value?.Trim();
+                TxtRootPath.Text = _RootPath ?? "";
+                Refresh();
+            }
         }
+
+        private string _RootPath;
 
         public ExplorerPanel()
         {
             InitializeComponent();
-            SetDefaultState();
-
-            FileListBox.DisplayMember = "Name";
-            FileListBox.DrawMode = DrawMode.OwnerDrawFixed;
-            FileListBox.DrawItem += FileListBox_DrawItem;
+            DoubleBuffered = true;
         }
 
-        private void SetDefaultState()
+        public override void Refresh()
         {
-            CurrentPath = Path.GetPathRoot(Application.StartupPath);
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(RootPath))
+                {
+                    DirectoryListView.Load(RootPath);
+                    TxtRootPath.Text = DirectoryListView.RootPath;
+                    LbFileCount.Text = $"{DirectoryListView.FileCount} Files";
+                    LbFolderCount.Text = $"{DirectoryListView.FolderCount} Folders";
+                }
+
+                base.Refresh();
+            }
+            catch (DirectoryNotFoundException)
+            {
+                Util.Alert("Path not found");
+            }
+            catch (Exception ex)
+            {
+                Util.Alert(ex.Message);
+            }
         }
 
-        private void SetPath(string path)
+        private void TxtRootPath_KeyDown(object sender, KeyEventArgs e)
         {
-            TxtPath.Text = path;
-            TxtPath.Select(path.Length, 0);
-            UpdateEntries();
-            UpdateFileListBox();
-        }
-
-        private void UpdateFileListBox()
-        {
-            FileListBox.DataSource = Entries;
-            FileListBox.Refresh();
-        }
-
-        private void UpdateEntries()
-        {
-            IEnumerable<string> entries = Directory.EnumerateFileSystemEntries(
-                CurrentPath, "*", SearchOption.TopDirectoryOnly);
-
-            Entries.Clear();
-            Entries.Add(new FilesystemEntry(FilesystemEntry.CurrentFolder));
-            Entries.Add(new FilesystemEntry(FilesystemEntry.ParentFolder));
-
-            foreach (string entry in entries)
-                Entries.Add(new FilesystemEntry(entry));
-        }
-
-        private void FileListBox_DrawItem(object sender, DrawItemEventArgs e)
-        {
-            e.DrawBackground();
-            DrawItem(e);
-            e.DrawFocusRectangle();
-        }
-
-        private void DrawItem(DrawItemEventArgs e)
-        {
-            FilesystemEntry entry = Entries[e.Index];
-            Graphics g = e.Graphics;
-            SolidBrush brush = new SolidBrush(Color.Black);
-
-            g.DrawString(entry.Name, e.Font, brush, e.Bounds, StringFormat.GenericDefault);
-
-            brush.Dispose();
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+                RootPath = TxtRootPath.Text;
+            }
         }
     }
 }

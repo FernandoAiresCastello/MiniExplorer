@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.28307.168
+VisualStudioVersion = 15.0.28307.1082
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniExplorer", "MiniExplorer\MiniExplorer.csproj", "{67115861-A38A-4CBD-A9AD-7486A25B990D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniExplorer", "MiniExplorer\MiniExplorer.csproj", "{78E730D9-3AF8-4DD2-AD12-0D7496BF4255}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{67115861-A38A-4CBD-A9AD-7486A25B990D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{67115861-A38A-4CBD-A9AD-7486A25B990D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{67115861-A38A-4CBD-A9AD-7486A25B990D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{67115861-A38A-4CBD-A9AD-7486A25B990D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78E730D9-3AF8-4DD2-AD12-0D7496BF4255}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78E730D9-3AF8-4DD2-AD12-0D7496BF4255}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78E730D9-3AF8-4DD2-AD12-0D7496BF4255}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78E730D9-3AF8-4DD2-AD12-0D7496BF4255}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {44F57783-37D2-450E-9A16-12ED19FAC98B}
+		SolutionGuid = {52E6F878-20E0-4EA8-AEA1-980982735BC6}
 	EndGlobalSection
 EndGlobal
