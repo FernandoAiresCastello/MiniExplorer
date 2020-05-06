@@ -11,11 +11,14 @@ using System.IO;
 using System.Collections;
 using System.Reflection;
 using System.Diagnostics;
+using Microsoft.VisualBasic.FileIO;
 
 namespace MiniExplorer
 {
     public partial class DirectoryListView : ListView
     {
+        public ExplorerPanel ExplorerPanel { set; get; }
+
         public enum DetailColumn
         {
             Filename, Size, Type
@@ -33,8 +36,6 @@ namespace MiniExplorer
         public long FileCount => CountFiles();
         public long FolderCount => CountFolders();
 
-        private readonly ImageList Icons = new ImageList();
-
         public DirectoryListView()
         {
             View = View.Details;
@@ -43,6 +44,7 @@ namespace MiniExplorer
 
             MouseDoubleClick += DirectoryListView_MouseDoubleClick;
             ColumnClick += DirectoryListView_ColumnClick;
+            KeyDown += DirectoryListView_KeyDown;
 
             SortBy = DetailColumn.Filename;
             AddColumn(DetailColumn.Filename, 200);
@@ -65,6 +67,27 @@ namespace MiniExplorer
 
         private void DirectoryListView_MouseDoubleClick(object sender, MouseEventArgs e)
         {
+            EnterSelectedDirectory();
+        }
+
+        private void DirectoryListView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                EnterSelectedDirectory();
+            }
+            else if (e.KeyCode == Keys.Back)
+            {
+                EnterParentDirectory();
+            }
+            else if (e.KeyCode == Keys.Delete)
+            {
+                DeleteSelectedItems();
+            }
+        }
+
+        private void EnterSelectedDirectory()
+        {
             try
             {
                 if (SelectedIndices.Count == 0)
@@ -72,12 +95,34 @@ namespace MiniExplorer
 
                 int index = SelectedIndices[0];
                 DirectoryItem item = DirectoryItems[index];
-                Process.Start(item.Path);
+                if (item.Type == DirectoryItemType.File)
+                    Process.Start(item.Path);
+                else if (item.Type == DirectoryItemType.Folder || item.Type == DirectoryItemType.SpecialFolder)
+                    ExplorerPanel.RootPath = item.Path;
             }
             catch (Exception ex)
             {
                 Util.Error(ex.Message);
             }
+        }
+
+        private void EnterParentDirectory()
+        {
+            DirectoryInfo parent = Directory.GetParent(RootPath);
+            if (parent != null)
+                ExplorerPanel.RootPath = parent.FullName;
+        }
+
+        private void DeleteSelectedItems()
+        {
+            if (SelectedIndices.Count == 0)
+                return;
+
+            List<string> paths = new List<string>();
+            foreach (int index in SelectedIndices)
+                paths.Add(DirectoryItems[index].Path);
+
+            Util.DeleteFilesOrFolders(paths);
         }
 
         public void Load(string rootPath)
@@ -91,11 +136,36 @@ namespace MiniExplorer
                 throw new DirectoryNotFoundException();
             
             DirectoryInfo = new DirectoryInfo(rootPath);
-            Icons.Images.Clear();
             DirectoryItems.Clear();
+            DirectoryItems.AddRange(GetSpecialDirectoryItems());
             DirectoryItems.AddRange(LoadFiles());
             DirectoryItems.AddRange(LoadFolders());
+            SortItems();
             UpdateView();
+        }
+
+        private void SortItems()
+        {
+            DirectoryItems.Sort(new Comparison<DirectoryItem>
+            (
+                (item1, item2) => 
+                {
+                    if (item1.Type == item2.Type)
+                    {
+                        return item1.Name.CompareTo(item2.Name);
+                    }
+                    if (item1.Type == DirectoryItemType.Folder && item2.Type == DirectoryItemType.File)
+                    {
+                        return -1;
+                    }
+                    if (item1.Type == DirectoryItemType.File && item2.Type == DirectoryItemType.Folder)
+                    {
+                        return 1;
+                    }
+
+                    return 0;
+                }
+            ));
         }
 
         public void Reload()
@@ -105,11 +175,15 @@ namespace MiniExplorer
 
         private void UpdateView()
         {
+            SmallImageList = ExplorerPanel.Icons;
             Items.Clear();
 
             foreach (DirectoryItem item in DirectoryItems)
             {
-                ListViewItem listItem = Items.Add(item.Name);
+                ListViewItem listItem;
+
+                listItem = Items.Add(item.Name);
+                listItem.ImageIndex = item.IconIndex;
                 listItem.Tag = item;
                 listItem.SubItems.Add(item.SizeAsString);
                 listItem.SubItems.Add(item.FileExtension);
@@ -121,20 +195,41 @@ namespace MiniExplorer
         private List<DirectoryItem> LoadFiles()
         {
             List<DirectoryItem> files = new List<DirectoryItem>();
-            int iconIndex = 0;
 
             foreach (FileInfo fileInfo in DirectoryInfo.EnumerateFiles())
             {
-                /*Icon icon = GetAssociatedIcon(fileInfo.FullName);
-                if (icon != null)
-                    Icons.Images.Add(icon);*/
-
                 DirectoryItem item = new DirectoryItem(fileInfo);
-                item.IconIndex = iconIndex++;
                 files.Add(item);
             }
 
             return files;
+        }
+
+        private List<DirectoryItem> LoadFolders()
+        {
+            List<DirectoryItem> folders = new List<DirectoryItem>();
+
+            foreach (DirectoryInfo dirInfo in DirectoryInfo.EnumerateDirectories())
+            {
+                DirectoryItem item = new DirectoryItem(dirInfo);
+                folders.Add(item);
+            }
+
+            return folders;
+        }
+
+        private List<DirectoryItem> GetSpecialDirectoryItems()
+        {
+            List<DirectoryItem> items = new List<DirectoryItem>();
+            DirectoryInfo parent = Directory.GetParent(RootPath);
+
+            if (parent != null)
+            {
+                SpecialDirectoryInfo parentFolderInfo = new SpecialDirectoryInfo("..", parent.FullName);
+                items.Add(new DirectoryItem(parentFolderInfo));
+            }
+
+            return items;
         }
 
         private Icon GetAssociatedIcon(string path)
@@ -151,12 +246,6 @@ namespace MiniExplorer
             }
 
             return icon;
-        }
-
-        private List<DirectoryItem> LoadFolders()
-        {
-            List<DirectoryItem> folders = new List<DirectoryItem>();
-            return folders;
         }
 
         private long CountFiles()

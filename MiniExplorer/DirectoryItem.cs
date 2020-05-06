@@ -5,18 +5,19 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace MiniExplorer
 {
     public enum DirectoryItemType
     {
-        Invalid, File, Folder
+        Invalid, File, Folder, SpecialFolder
     }
 
     public class DirectoryItem
     {
         public DirectoryItemType Type { get; private set; }
-        public int IconIndex { set; get; }
+        public int IconIndex => GetIconIndex();
         public string Path => GetPath();
         public string Name => GetName();
         public string SizeAsString => GetSizeAsString();
@@ -24,6 +25,7 @@ namespace MiniExplorer
 
         private readonly FileInfo FileInfo;
         private readonly DirectoryInfo DirectoryInfo;
+        private readonly SpecialDirectoryInfo SpecialDirectoryInfo;
 
         public DirectoryItem(FileInfo info)
         {
@@ -37,12 +39,34 @@ namespace MiniExplorer
             DirectoryInfo = info;
         }
 
+        public DirectoryItem(SpecialDirectoryInfo info)
+        {
+            Type = DirectoryItemType.SpecialFolder;
+            SpecialDirectoryInfo = info;
+        }
+
+        private int GetIconIndex()
+        {
+            if (Type == DirectoryItemType.Folder)
+                return 0;
+            else if (Type == DirectoryItemType.File)
+                return 1;
+            else if (Name == "..")
+                return 2;
+            if (Type == DirectoryItemType.SpecialFolder)
+                return -1;
+
+            return -1;
+        }
+
         private string GetName()
         {
             if (Type == DirectoryItemType.File)
                 return FileInfo.Name;
             else if (Type == DirectoryItemType.Folder)
                 return DirectoryInfo.Name;
+            else if (Type == DirectoryItemType.SpecialFolder)
+                return SpecialDirectoryInfo.Name;
 
             return null;
         }
@@ -53,13 +77,15 @@ namespace MiniExplorer
                 return FileInfo.FullName;
             else if (Type == DirectoryItemType.Folder)
                 return DirectoryInfo.FullName;
+            else if (Type == DirectoryItemType.SpecialFolder)
+                return SpecialDirectoryInfo.Path;
 
             return null;
         }
 
         private string GetSizeAsString()
         {
-            return Util.BytesToString(FileInfo.Length);
+            return Type == DirectoryItemType.File ? Util.BytesToString(FileInfo.Length) : "";
         }
 
         private string GetFileExtension()

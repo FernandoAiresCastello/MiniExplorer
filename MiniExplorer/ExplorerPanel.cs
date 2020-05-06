@@ -32,6 +32,7 @@ namespace MiniExplorer
         public ExplorerPanel()
         {
             InitializeComponent();
+            DirectoryListView.ExplorerPanel = this;
             DoubleBuffered = true;
         }
 

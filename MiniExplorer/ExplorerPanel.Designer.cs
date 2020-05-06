@@ -28,14 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExplorerPanel));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.TxtRootPath = new System.Windows.Forms.TextBox();
             this.ToolBar = new System.Windows.Forms.ToolStrip();
             this.StatusBar = new System.Windows.Forms.StatusStrip();
             this.LbFileCount = new System.Windows.Forms.ToolStripStatusLabel();
             this.LbFolderCount = new System.Windows.Forms.ToolStripStatusLabel();
-            this.DirectoryListView = new MiniExplorer.DirectoryListView();
             this.LbSort = new System.Windows.Forms.ToolStripStatusLabel();
+            this.Icons = new System.Windows.Forms.ImageList(this.components);
+            this.DirectoryListView = new MiniExplorer.DirectoryListView();
             this.tableLayoutPanel1.SuspendLayout();
             this.StatusBar.SuspendLayout();
             this.SuspendLayout();
@@ -100,25 +103,35 @@
             this.LbFolderCount.Size = new System.Drawing.Size(54, 17);
             this.LbFolderCount.Text = "0 Folders";
             // 
+            // LbSort
+            // 
+            this.LbSort.Name = "LbSort";
+            this.LbSort.Size = new System.Drawing.Size(107, 17);
+            this.LbSort.Text = "Sort: Filename ASC";
+            // 
+            // Icons
+            // 
+            this.Icons.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("Icons.ImageStream")));
+            this.Icons.TransparentColor = System.Drawing.Color.Transparent;
+            this.Icons.Images.SetKeyName(0, "folder.png");
+            this.Icons.Images.SetKeyName(1, "page_white.png");
+            this.Icons.Images.SetKeyName(2, "arrow_undo.png");
+            // 
             // DirectoryListView
             // 
             this.DirectoryListView.AllowColumnReorder = true;
             this.DirectoryListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.DirectoryListView.ExplorerPanel = null;
             this.DirectoryListView.FullRowSelect = true;
             this.DirectoryListView.GridLines = true;
             this.DirectoryListView.HideSelection = false;
             this.DirectoryListView.Location = new System.Drawing.Point(3, 54);
             this.DirectoryListView.Name = "DirectoryListView";
             this.DirectoryListView.Size = new System.Drawing.Size(330, 323);
+            this.DirectoryListView.SortBy = MiniExplorer.DirectoryListView.DetailColumn.Filename;
             this.DirectoryListView.TabIndex = 1;
             this.DirectoryListView.UseCompatibleStateImageBehavior = false;
             this.DirectoryListView.View = System.Windows.Forms.View.Details;
-            // 
-            // LbSort
-            // 
-            this.LbSort.Name = "LbSort";
-            this.LbSort.Size = new System.Drawing.Size(107, 17);
-            this.LbSort.Text = "Sort: Filename ASC";
             // 
             // ExplorerPanel
             // 
@@ -145,5 +158,6 @@
         private System.Windows.Forms.ToolStripStatusLabel LbFileCount;
         private System.Windows.Forms.ToolStripStatusLabel LbFolderCount;
         private System.Windows.Forms.ToolStripStatusLabel LbSort;
+        public System.Windows.Forms.ImageList Icons;
     }
 }
